@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neuro-sim"
+version = "0.1.0"
+description = "A research-grade educational biological neuron simulation platform"
+authors = [
+    {name = "Beatrice Oira", email = "beatriceoira@example.com"}
+]
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "matplotlib>=3.7.0",
+    "pandas>=2.0.0",
+    "plotly>=5.15.0",
+    "dash>=2.15.0",
+    "pytest>=7.0.0",
+    "pyyaml>=6.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "flake8>=6.0.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0"
+]
+
+[project.scripts]
+neurosim = "neurosim.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

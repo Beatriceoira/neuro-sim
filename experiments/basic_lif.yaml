@@ -1,0 +1,26 @@
+# Basic LIF Neuron Experiment
+neuron:
+  model: lif
+  parameters:
+    membrane_resistance: 10.0      # MΩ
+    membrane_time_constant: 20.0   # ms
+    resting_potential: -65.0       # mV
+    threshold_potential: -50.0     # mV
+    reset_potential: -65.0         # mV
+    refractory_period: 2.0         # ms
+
+simulation:
+  duration: 200.0                  # ms
+  dt: 0.01                         # ms
+  spike_threshold: -50.0           # mV
+  spike_reset: -65.0               # mV
+  refractory_period: 2.0           # ms
+
+stimulus:
+  type: step
+  amplitude: 10.0                  # pA
+  start_time: 50.0                 # ms
+  end_time: 150.0                  # ms
+
+# For reproducibility
+seed: 42

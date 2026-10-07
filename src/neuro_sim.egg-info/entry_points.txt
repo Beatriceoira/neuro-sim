@@ -1,0 +1,2 @@
+[console_scripts]
+neurosim = neurosim.cli:main
