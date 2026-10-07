@@ -169,6 +169,10 @@ class STDSynapse(BaseSynapse):
         if post_synaptic_spike:
             self.post_synaptic_spike_times.append(current_time)
 
+        # Clean up old spike times unconditionally so the lists stay bounded
+        # even if the learning-rule path above is skipped or short-circuited.
+        self._cleanup_spike_times(current_time)
+
         return self.state.copy()
 
     def _apply_stdp_rule(
@@ -210,9 +214,6 @@ class STDSynapse(BaseSynapse):
                 if delta_t < 0:  # Post before pre -> LTD
                     dw = -self.A_minus * np.exp(delta_t / self.tau_minus)  # delta_t is negative
                     self.weight = max(self.weight_min, self.weight + dw)
-
-        # Clean up old spike times to prevent memory growth
-        self._cleanup_spike_times(current_time)
 
     def _cleanup_spike_times(self, current_time: float):
         """

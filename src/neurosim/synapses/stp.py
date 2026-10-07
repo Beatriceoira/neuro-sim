@@ -134,28 +134,29 @@ class ShortTermPlasticitySynapse(BaseSynapse):
         y = self.state['y']
 
         # Update short-term plasticity variables
-        # du/dt = -u/tau_facilitation
+        # Between-spike dynamics:
+        #   du/dt = -u/tau_facilitation
+        #   dR/dt = (1-R)/tau_recovery
+        # tau_facilitation == 0 is a degenerate but valid configuration
+        # (no facilitation decay); guard the division explicitly.
         u_dt = -u / self.tau_facilitation if self.tau_facilitation > 0 else 0.0
-
-        # dR/dt = (1-R)/tau_recovery
         R_dt = (1.0 - R) / self.tau_recovery
 
-        # Add spike effects if pre-synaptic spike occurred
+        # Integrate between-spike dynamics
+        u += u_dt * dt
+        R += R_dt * dt
+
+        # Apply instantaneous spike effects (Tsodyks-Markram)
+        # Spikes are jumps, not derivative terms, so they are applied
+        # directly rather than scaled by 1/dt.
         if pre_synaptic_spike:
             # Facilitation: increase utilization
-            u_spike_term = self.U * (1.0 - u)
-            u_dt += u_spike_term / dt  # Scale by dt for integration
-
+            u += self.U * (1.0 - u)
             # Depression: decrease available resources
-            R_spike_term = u * R
-            R_dt -= R_spike_term / dt  # Scale by dt for integration
+            R -= u * R
 
             # Record spike time
             self.spike_times.append(current_time)
-
-        # Update state variables
-        u += u_dt * dt
-        R += R_dt * dt
 
         # Ensure bounds
         u = max(0.0, min(1.0, u))

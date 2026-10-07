@@ -2,8 +2,6 @@
 
 A modular computational neuroscience simulator for biological neuron dynamics, synaptic interactions, and neural network activity. Supports models from leaky integrate-and-fire to full Hodgkin–Huxley conductance-based neurons with multi-compartment morphology, plasticity, and scientific visualization.
 
----
-
 ## Overview
 
 Neuro-Sim provides a layered simulation pipeline:
@@ -30,8 +28,6 @@ The simulator covers four levels of abstraction:
 | Biophysical | Hodgkin–Huxley | Single-neuron electrophysiology, ion channel dynamics |
 | Spatial | Multi-compartment | Dendritic integration, morphological effects |
 
----
-
 ## Features
 
 | Component | Status | Description |
@@ -57,8 +53,6 @@ The simulator covers four levels of abstraction:
 | NMDA Synapses | Not implemented | — |
 | GPU Acceleration | Not implemented | — |
 
----
-
 ## Scientific Models
 
 ### Leaky Integrate-and-Fire (LIF)
@@ -77,8 +71,6 @@ $$V \rightarrow V_{reset}$$
 
 **Location:** `src/neurosim/neurons/lif.py`
 
----
-
 ### Adaptive LIF
 
 Extends the LIF model with a spike-triggered adaptation current `w` that produces spike-frequency adaptation:
@@ -94,8 +86,6 @@ On each spike, `w` receives an additive increment.
 **Parameters:** `a` (subthreshold adaptation), `τ_w`, `w_increment` (spike-triggered)
 
 **Location:** `src/neurosim/neurons/adaptive_lif.py`
-
----
 
 ### Izhikevich
 
@@ -114,8 +104,6 @@ When `V ≥ 30 mV`: `V ← c`, `u ← u + d`
 **Parameters:** `a`, `b`, `c`, `d`
 
 **Location:** `src/neurosim/neurons/izhikevich.py`
-
----
 
 ### Hodgkin–Huxley
 
@@ -147,8 +135,6 @@ where the rate constants are:
 
 **Location:** `src/neurosim/neurons/hodgkin_huxley.py`
 
----
-
 ### Ion Channels
 
 Ion channels are implemented as pluggable components with a shared interface:
@@ -170,8 +156,6 @@ Implemented channels:
 | LeakChannel | `leak` | Constant leak conductance |
 
 **Location:** `src/neurosim/channels/`
-
----
 
 ### Synapses
 
@@ -199,8 +183,6 @@ Weight bounds `[weight_min, weight_max]` clamp updates.
 
 **Location:** `src/neurosim/synapses/`
 
----
-
 ### Network Simulation
 
 Populations of neurons are connected with configurable rules:
@@ -216,8 +198,6 @@ Connectivity options: `all_to_all_connect`, `random_connect` with probability-ba
 
 **Location:** `src/neurosim/networks/network.py`
 
----
-
 ### Multi-Compartment Models
 
 Neurons with dendritic trees are modeled using the cable equation. Each compartment obeys:
@@ -231,8 +211,6 @@ $$R_{ij} = \frac{R_a}{2} \left( \frac{L_i}{\pi r_i^2} + \frac{L_j}{\pi r_j^2} \r
 Morphology can be built programmatically or loaded from SWC files.
 
 **Location:** `src/neurosim/neurons/multi_compartment.py`, `compartment.py`, `morphology.py`
-
----
 
 ## Architecture
 
@@ -279,8 +257,6 @@ src/neurosim/
 │   └── jit.py                 Numba-accelerated spike detection and synaptic accumulation
 └── cli.py           Command-line interface
 ```
-
----
 
 ## Installation
 
@@ -330,8 +306,6 @@ Numba is auto-detected at import time. If available, the optimization module use
 pip install numba
 ```
 
----
-
 ## Quick Start
 
 ```bash
@@ -364,8 +338,6 @@ for i in range(3000):
 spikes = np.array(neuron.state.spike_times)
 print(f"Spikes: {len(spikes)}, firing rate: {len(spikes)/2.0:.1f} Hz")
 ```
-
----
 
 ## Running Experiments
 
@@ -414,8 +386,6 @@ stimulus:
 seed: 42
 ```
 
----
-
 ## Visualization
 
 ### Matplotlib plots
@@ -454,8 +424,6 @@ web_dash = WebDashboard(neurons=[neuron], duration=200.0, dt=0.1)
 web_dash.save_html("dashboard.html")
 ```
 
----
-
 ## Analysis
 
 Spike train analysis tools are in `src/neurosim/analysis/spikes.py`:
@@ -470,16 +438,12 @@ Spike train analysis tools are in `src/neurosim/analysis/spikes.py`:
 | `population_synchrony` | Variance/mean of binned population spike counts |
 | `cross_correlation` | Cross-correlogram between two spike trains |
 
----
-
 ## Reproducibility
 
 - The project uses fixed timesteps for deterministic integration.
 - Stochastic components (e.g., random connectivity) accept a `seed` parameter in configuration files.
 - Experiment YAML files pin simulation duration, timestep, and seed for reproducible runs.
 - The `optimization/jit.py` module auto-detects Numba availability and provides a pure-NumPy fallback.
-
----
 
 ## Examples
 
@@ -496,8 +460,6 @@ Run any example with:
 ```bash
 PYTHONPATH=src python examples/run_lif_simple.py
 ```
-
----
 
 ## Testing
 
@@ -518,8 +480,6 @@ Test suite: **94 tests** covering neuron models, multi-compartment dynamics, syn
 | `tests/test_stdp.py` | STDP LTP/LTD, weight bounds, conductance update |
 | `tests/test_visualization.py` | Matplotlib and Plotly dashboard plotting |
 
----
-
 ## Numerical Considerations
 
 - **Integration:** Forward Euler is the default. `integrators.py` also provides RK4 and exponential-Euler (exact solution for linear ODEs, useful for gating variables).
@@ -527,8 +487,6 @@ Test suite: **94 tests** covering neuron models, multi-compartment dynamics, syn
 - **Gating variable bounds:** All implemented gating variables remain within [0, 1] at tested timesteps.
 - **NaN/Inf:** No uncontrolled divergence observed in unit tests. Numerical checks are performed in the benchmark suite.
 - **Numba JIT:** When available, spike detection (`detect_spikes`) and synaptic accumulation (`accumulate_synaptic_currents`) are accelerated via `@njit`. Falls back to NumPy when Numba is absent.
-
----
 
 ## Scientific Limitations
 
@@ -540,8 +498,6 @@ Neuro-Sim is a **computational model**, not a complete biological reconstruction
 - **Plasticity:** STDP uses a phenomenological exponential window; does not model NMDA-receptor dependent spike-timing mechanisms.
 - **Network scale:** Python-loop integration limits simulations to hundreds–thousands of neurons on typical hardware without JIT.
 - **Parameter values:** Default parameters follow canonical Hodgkin–Huxley (1952) but are not calibrated to any specific cell type.
-
----
 
 ## Project Structure
 
@@ -620,8 +576,6 @@ neuro-sim/
 └── README.md
 ```
 
----
-
 ## Roadmap
 
 ### Implemented
@@ -656,8 +610,6 @@ neuro-sim/
 - Parameter fitting and model calibration tools
 - Jupyter notebook tutorials
 
----
-
 ## Contributing
 
 Contributions are welcome. To get started:
@@ -676,8 +628,21 @@ pip install -e ".[dev]"
 4. Commit changes: `git commit -m "Add my feature"`
 5. Push and open a pull request
 
----
-
 ## License
 
-License information has not yet been specified.
+MIT License
+
+  Copyright (c) 2026 Beatrice Oira
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy of this
+    software and associated documentation files (the "Software"), to deal in the Software
+    without restriction, including without limitation the rights to use, copy, modify,
+    merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+    INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+    PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+    HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+    OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
